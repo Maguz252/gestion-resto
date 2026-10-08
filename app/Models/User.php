@@ -13,6 +13,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -21,6 +23,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
         'password',
     ];
 
@@ -45,5 +48,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    // esto es un ayudante 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }
