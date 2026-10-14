@@ -4,16 +4,13 @@ namespace App\Livewire\Products;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-
 use App\Models\Product;
 
 class ProductIndex extends Component
 {
     use WithPagination;
-    //   #[Layout('layouts.app')]
+
     public string $search = '';
-
-
 
     public function render()
     {
@@ -21,9 +18,15 @@ class ProductIndex extends Component
             ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->latest()
             ->paginate(10);
+
         return view('livewire.products.product-index', ['products' => $products]);
     }
 
+    public function delete($id)
+    {
+        Product::findOrFail($id)->delete();
+        session()->flash('success', 'Producto eliminado correctamente.');
+    }
 
     public function updating($property)
     {

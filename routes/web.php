@@ -16,6 +16,11 @@ Route::get('/productform', ProductForm::class)
     ->middleware(['auth'])
     ->name('products.form');
 
+// Ruta para EDITAR
+Route::get('/products/{product}/edit', ProductForm::class)
+    ->middleware(['auth'])
+    ->name('products.edit');
+
 Route::view('/', 'welcome');
 
 Route::view('dashboard', 'dashboard')
