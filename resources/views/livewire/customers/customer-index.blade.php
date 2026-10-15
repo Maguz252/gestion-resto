@@ -93,7 +93,7 @@
                                 </td>
 
                                 <td class="p-3">
-                                    <a href="{{ route('customer.edit', $customer) }}" wire:navigate
+                                    <a href="{{ route('customers.edit', $customer) }}" wire:navigate
                                         class="text-blue-600 hover:text-blue-800 font-medium me-3">
                                         Editar
                                     </a>

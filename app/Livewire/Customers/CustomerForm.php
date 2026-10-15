@@ -20,7 +20,7 @@ class CustomerForm extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:100',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'notes' => 'nullable|string|max:255',
@@ -58,7 +58,7 @@ class CustomerForm extends Component
 
 
         session()->flash('success', $message);
-        return $this->redirect(route('customer.index'));
+        return $this->redirect(route('customers.index'));
     }
 
     public function render()

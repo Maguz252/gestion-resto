@@ -13,7 +13,11 @@ class CustomerIndex extends Component
 
     public string $search = '';
 
-
+    public function delete($id)
+    {
+        Customer::findOrFail($id)->delete();
+        session()->flash('success', 'Cliente eliminado correctamente.');
+    }
 
     public function render()
     {

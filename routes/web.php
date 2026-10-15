@@ -25,15 +25,16 @@ Route::get('/products/{product}/edit', ProductForm::class)
     ->middleware(['auth'])
     ->name('products.edit');
 //ruta para el cliente
+
 Route::get('/customers', CustomerIndex::class)
     ->middleware(['auth'])
-    ->name('customer.index');
+    ->name('customers.index');
 Route::get('/customerform', CustomerForm::class)
     ->middleware(['auth'])
-    ->name('customer.form');
+    ->name('customers.form');
 Route::get('/customer/{customer}/edit', CustomerForm::class)
     ->middleware(['auth'])
-    ->name('customer.edit');
+    ->name('customers.edit');
 
 Route::view('/', 'welcome');
 
