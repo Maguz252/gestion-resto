@@ -2,8 +2,13 @@
 
 use App\Livewire\Customers\CustomerForm;
 use App\Livewire\Customers\CustomerIndex;
+use App\Livewire\Dashboard;
+use App\Livewire\Orders\OrderCreate;
+use App\Livewire\Orders\OrderIndex;
+use App\Livewire\Orders\OrderShow;
 use App\Livewire\Products\ProductForm;
 use App\Livewire\Products\ProductIndex;
+use App\Http\Controllers\OrderPdfController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -38,12 +43,31 @@ Route::get('/customer/{customer}/edit', CustomerForm::class)
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
+//order
+Route::get('/orders', OrderIndex::class)
+    ->middleware(['auth'])
+    ->name('orders.index');
+
+Route::get('/ordersForm', OrderCreate::class)
+    ->middleware(['auth'])
+    ->name('orders.create');
+
+//
+Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+Route::get('/orders/{order}', OrderShow::class)
+    ->middleware(['auth'])
+    ->name('orders.show');
 
+
+
+Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'download'])
+    ->middleware(['auth'])
+    ->name('orders.pdf');
 require __DIR__ . '/auth.php';

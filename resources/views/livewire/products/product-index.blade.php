@@ -34,6 +34,7 @@
                             {{-- Contador correlativo considerando la paginación --}}
                             <td class="p-3">
                                 {{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}</td>
+
                             <td class="p-3">{{ $product->name }}</td>
                             <td class="p-3">{{ $product->description }}</td>
                             <td class="p-3">{{ $product->price }}</td>

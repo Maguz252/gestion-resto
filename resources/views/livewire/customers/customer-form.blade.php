@@ -3,7 +3,7 @@
 
         {{-- Título --}}
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
-            {{ $customerId ? 'Editar producto' : 'Nuevo producto' }}
+            {{ $customerId ? 'Editar cliente' : 'Nuevo cliente' }}
         </h2>
 
         {{-- Tarjeta --}}
