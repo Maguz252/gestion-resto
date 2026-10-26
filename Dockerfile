@@ -30,8 +30,10 @@ COPY . .
 RUN touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/database
 
-# 7. Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader
+# 7. Configurar Composer (Token, timeout e IPv4) y ejecutar la instalación
+RUN composer config -g http.timeout 600 \
+    && if [ -n "$GITHUB_TOKEN" ]; then composer config -g github-oauth.github.com $GITHUB_TOKEN; fi \
+    && COMPOSER_DISABLE_XDEBUG_WARN=1 CURL_IPRESOLVE=4 composer install --no-dev --optimize-autoloader
 
 # 8. Instalar dependencias de Node y compilar Tailwind (Vite)
 RUN npm install && npm run build
@@ -44,5 +46,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 8080
 
-# 11. Iniciar la app (Migrar y servir)
+# 11. Iniciar la app
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
