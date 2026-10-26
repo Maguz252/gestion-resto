@@ -12,62 +12,26 @@ use App\Http\Controllers\OrderPdfController;
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/admin', function () {
-    return 'Bienvenido, admin';
-})->middleware(['auth', 'admin']);
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/products', ProductIndex::class)
-    ->middleware(['auth'])
-    ->name('products.index');
+    Route::get('dashboard', Dashboard::class)->middleware('verified')->name('dashboard');
+    Route::view('profile', 'profile')->name('profile');
+    // --- RUTAS DE PRODUCTOS uwu---
+    Route::get('/products', ProductIndex::class)->name('products.index');
+    Route::get('/products/create', ProductForm::class)->name('products.create');
+    Route::get('/products/{product}/edit', ProductForm::class)->name('products.edit');
+    // --- RUTAS DE CLIENTES :v ---
+    Route::get('/customers', CustomerIndex::class)->name('customers.index');
+    Route::get('/customers/create', CustomerForm::class)->name('customers.create');
+    Route::get('/customers/{customer}/edit', CustomerForm::class)->name('customers.edit');
+    // --- RUTAS DE ORDENES xd ---
+    Route::get('/orders', OrderIndex::class)->name('orders.index');
+    Route::get('/orders/create', OrderCreate::class)->name('orders.create');
+    Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'download'])->name('orders.pdf');
+    Route::get('/orders/{order}', OrderShow::class)->name('orders.show');
+});
 
-Route::get('/productform', ProductForm::class)
-    ->middleware(['auth'])
-    ->name('products.form');
-
-
-// Ruta para EDITAR
-Route::get('/products/{product}/edit', ProductForm::class)
-    ->middleware(['auth'])
-    ->name('products.edit');
-//ruta para el cliente
-
-Route::get('/customers', CustomerIndex::class)
-    ->middleware(['auth'])
-    ->name('customers.index');
-Route::get('/customerform', CustomerForm::class)
-    ->middleware(['auth'])
-    ->name('customers.form');
-Route::get('/customer/{customer}/edit', CustomerForm::class)
-    ->middleware(['auth'])
-    ->name('customers.edit');
-
-Route::view('/', 'welcome');
-
-//order
-Route::get('/orders', OrderIndex::class)
-    ->middleware(['auth'])
-    ->name('orders.index');
-
-Route::get('/ordersForm', OrderCreate::class)
-    ->middleware(['auth'])
-    ->name('orders.create');
-
-//
-Route::get('dashboard', Dashboard::class)
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
-Route::get('/orders/{order}', OrderShow::class)
-    ->middleware(['auth'])
-    ->name('orders.show');
-
-
-
-Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'download'])
-    ->middleware(['auth'])
-    ->name('orders.pdf');
 require __DIR__ . '/auth.php';

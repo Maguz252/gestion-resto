@@ -1,10 +1,17 @@
 <div>
     <div class="p-6 max-w-7xl mx-auto">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mb-6">
-            Productos
-        </h2>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Productos
+            </h2>
+            <a href="{{ route('products.create') }}" wire:navigate
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                Nuevo Producto
+            </a>
+        </div>
 
         {{-- Contenedor blanco --}}
+
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             @if (session()->has('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" x-transition
