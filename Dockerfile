@@ -1,50 +1,36 @@
 FROM php:8.2-fpm-alpine
 
-# 1. Instalar dependencias del sistema
 RUN apk add --no-cache \
-    nginx \
-    nodejs \
-    npm \
-    git \
-    curl \
-    libpng-dev \
-    oniguruma-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    sqlite-dev
+    nginx nodejs npm git curl libpng-dev \
+    oniguruma-dev libxml2-dev zip unzip sqlite-dev
 
-# 2. Instalar extensiones de PHP
 RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
 
-# 3. Copiar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. Configurar directorio de trabajo
 WORKDIR /var/www/html
 
-# 5. Copiar el proyecto (con los permisos correctos desde el inicio)
 COPY --chown=www-data:www-data . .
 
-# 6. Crear la base de datos SQLite y darle permisos
+# Crear la base de datos SQLite
 RUN touch /var/www/html/database/database.sqlite && \
     chown -R www-data:www-data /var/www/html/database
 
-# 7. Instalar dependencias de PHP (con timeouts extendidos)
+# Instalar dependencias de PHP
 RUN COMPOSER_PROCESS_TIMEOUT=900 COMPOSER_HTTP_TIMEOUT=900 composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
 
-# 8. Compilar assets (Vite) limitando la memoria de Node.js a ~460MB para el plan gratuito
+# Compilar Vite (borrando el archivo 'hot' si existe)
 RUN if [ -f package.json ]; then \
     NODE_OPTIONS="--max-old-space-size=460" npm install && \
     NODE_OPTIONS="--max-old-space-size=460" npm run build && \
     rm -f public/hot; \
     fi
 
-# 9. Limpiar caché y configurar permisos finales
-RUN php artisan optimize:clear && \
-    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
+# Dar permisos a las carpetas necesarias
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 8080
 
-# 11. Iniciar la app
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
+# ACÁ ESTÁ LA MAGIA: Limpiamos la caché AL INICIAR, no al construir.
+# Y ejecutamos las migraciones.
+CMD php artisan optimize:clear && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
