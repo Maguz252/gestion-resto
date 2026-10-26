@@ -23,24 +23,26 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 4. Configurar directorio de trabajo
 WORKDIR /var/www/html
 
-# 5. Copiar el proyecto
-COPY . .
+# 5. Copiar el proyecto (con los permisos correctos desde el inicio)
+COPY --chown=www-data:www-data . .
 
 # 6. Crear la base de datos SQLite y darle permisos
-RUN touch /var/www/html/database/database.sqlite
-RUN chown -R www-data:www-data /var/www/html/database
+RUN touch /var/www/html/database/database.sqlite && \
+    chown -R www-data:www-data /var/www/html/database
 
-# 7. Instalar dependencias de PHP
+# 7. Instalar dependencias de PHP (con timeouts extendidos)
 RUN COMPOSER_PROCESS_TIMEOUT=900 COMPOSER_HTTP_TIMEOUT=900 composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
 
-# 8. Instalar dependencias de Node, borrar el archivo 'hot' por si las dudas y compilar
-RUN npm install && rm -f public/hot && npm run build
+# 8. Compilar assets (Vite) limitando la memoria de Node.js a ~460MB para el plan gratuito
+RUN if [ -f package.json ]; then \
+    NODE_OPTIONS="--max-old-space-size=460" npm install && \
+    NODE_OPTIONS="--max-old-space-size=460" npm run build && \
+    rm -f public/hot; \
+    fi
 
-# 9. Limpiar caché
-RUN php artisan optimize:clear
-
-# 10. Configurar permisos de almacenamiento y de la carpeta pública
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
+# 9. Limpiar caché y configurar permisos finales
+RUN php artisan optimize:clear && \
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 8080
 
