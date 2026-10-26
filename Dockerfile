@@ -30,18 +30,17 @@ COPY . .
 RUN touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/database
 
-# 7. Instalar dependencias (¡La línea clave corregida!)
-# Usamos variables de entorno en lugar del comando config
+# 7. Instalar dependencias de PHP
 RUN COMPOSER_PROCESS_TIMEOUT=900 COMPOSER_HTTP_TIMEOUT=900 composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
 
-# 8. Instalar dependencias de Node y compilar Tailwind
-RUN npm install && npm run build
+# 8. Instalar dependencias de Node, borrar el archivo 'hot' por si las dudas y compilar
+RUN npm install && rm -f public/hot && npm run build
 
-# 9. Limpiar caché para que tome las variables de entorno de Render
+# 9. Limpiar caché
 RUN php artisan optimize:clear
 
-# 10. Configurar permisos de almacenamiento
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 10. Configurar permisos de almacenamiento y de la carpeta pública
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 8080
 
