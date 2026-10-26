@@ -30,12 +30,11 @@ COPY . .
 RUN touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/database
 
-# 7. Configurar Composer (Token, timeout e IPv4) y ejecutar la instalación
-RUN composer config -g http.timeout 600 \
-    && if [ -n "$GITHUB_TOKEN" ]; then composer config -g github-oauth.github.com $GITHUB_TOKEN; fi \
-    && COMPOSER_DISABLE_XDEBUG_WARN=1 CURL_IPRESOLVE=4 composer install --no-dev --optimize-autoloader
+# 7. Instalar dependencias (Forzando IPv4 y aumentando el tiempo de espera para evitar timeouts)
+RUN composer config -g http.timeout 600
+RUN CURL_IPRESOLVE=4 composer install --no-dev --optimize-autoloader
 
-# 8. Instalar dependencias de Node y compilar Tailwind (Vite)
+# 8. Instalar dependencias de Node y compilar Tailwind
 RUN npm install && npm run build
 
 # 9. Limpiar caché para que tome las variables de entorno de Render
