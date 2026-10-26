@@ -30,9 +30,9 @@ COPY . .
 RUN touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/database
 
-# 7. Instalar dependencias (Forzando IPv4 y aumentando el tiempo de espera para evitar timeouts)
+# 7. Instalar dependencias de PHP (Aumentando timeout por si la red de Render falla)
 RUN composer config -g http.timeout 600
-RUN CURL_IPRESOLVE=4 composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # 8. Instalar dependencias de Node y compilar Tailwind
 RUN npm install && npm run build
