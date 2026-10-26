@@ -42,3 +42,5 @@ CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
 # Crear la base de datos SQLite y darle permisos
 RUN touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/database
+# Limpiar caché para que tome las variables de entorno de Render
+RUN php artisan optimize:clear
