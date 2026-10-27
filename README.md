@@ -28,3 +28,10 @@ php artisan migrate --seed
 npm install
 npm run build
 php artisan serve
+
+## 🌐 Demo en vivo
+[https://restogest.onrender.com](https://restogest.onrender.com)
+
+**Credenciales:**
+- Admin: admin@restogest.com / 123456789
+- Empleado: empleado@restogest.com / 123456789
